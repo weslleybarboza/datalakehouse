@@ -36,6 +36,8 @@ logs/
 ### VS Code ###
 .vscode/
 
-
 #### data example
 /datasources/*
+
+#### volumes
+/docker/volume/*
