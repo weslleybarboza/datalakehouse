@@ -75,7 +75,7 @@ services:
     container_name: minio
     hostname: minio
     image: 'minio/minio'
-    profiles: [ "storage", "spark", "nifi", "dbt" ]
+    profiles: [ "storage", "nifi", "dbt", "dremio" ]
     ports:
     - '9000:9000'
     - '9001:9001'
@@ -88,7 +88,7 @@ services:
     - ./docker/volume/minio:/data
   minio-job:
     image: 'minio/mc'
-    profiles: [ "storage", "nifi" ]
+    profiles: [ "storage", "nifi", "dbt", "dremio" ]
     container_name: minio-job
     hostname: minio-job
     entrypoint: |
@@ -135,49 +135,6 @@ services:
     image: projectnessie/nessie:0.67.0
     ports:
     - 19120:19120
-
-  ####################################################################################################
-  # Spark
-  ####################################################################################################
-  spark-iceberg:
-    profiles: [ "spark" ]
-    # build:
-    #   context: ./docker/spark/
-    #   dockerfile: Dockerfile-spark3.4
-    image: weslleybarboza/spark-3.4:latest
-    container_name: spark-iceberg
-    hostname: spark-iceberg
-    entrypoint: |
-      /bin/bash -c "
-      jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
-      "
-    ports:
-    - "4040:4040"
-    - "8900:8888"
-    - "8901:8080"
-    depends_on:
-    - minio
-    - hive-metastore
-    environment:
-    - AWS_ACCESS_KEY_ID=minio
-    - AWS_SECRET_ACCESS_KEY=minio123
-    - AWS_REGION=us-east-1
-    - AWS_DEFAULT_REGION=us-east-1
-    - S3_ENDPOINT=http://minio:9000
-    - S3_PATH_STYLE_ACCESS=true
-    mem_limit: "8g"
-    mem_reservation: "512m"
-    cpus: "4"
-    cpuset: "4"
-    volumes:
-    - ./notebook:/opt/notebook
-    - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
-    - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
-    - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf
-    - spark_binaries:/opt/spark/bin
-    - spark_jars:/opt/spark/jars
-    # - spark_python:/usr
-
     ####################################################################################################
     # Airflow
     ####################################################################################################
