@@ -1,12 +1,10 @@
 # Configure modules
-x-airflow-common:
-  &airflow-common
+x-airflow-common: &airflow-common
   build:
     context: .
     dockerfile: docker/airflow/dockerfile
   # image: apache/airflow:2.7.0-python3.10
-  environment:
-    &airflow-common-env
+  environment: &airflow-common-env
     S3_ENDPOINT: http://minio:9000
     S3_ACCESS_KEY: minio
     S3_SECRET_KEY: minio123
@@ -32,19 +30,18 @@ x-airflow-common:
     # the container starts, so it is only useful for testing and trying out of adding dependencies.
     # _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- dbt-core dbt-trino trino airflow-dbt}
   volumes:
-    - ./dags:/opt/airflow/dags
-    - ./dbts:/opt/airflow/dbts
-    - ./docker/airflow/config:/opt/airflow/config
-    - ./docker/airflow/plugins:/opt/airflow/plugins
-    - ./docker/volume/airflow/logs:/opt/airflow/logs
-    - ./datasources:/opt/airflow/sources  # Mount datasources directory to airflow containers
-    - ./notebook:/opt/spark/notebook # Mount notebook directory to airflow containers (for spark script)
-    - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf # Default configs for spark
-    - /var/run/docker.sock:/var/run/docker.sock
-    -  C:/Users/matsch/Downloads/FTP_TESTING:/ftp_files
+  - ./dags:/opt/airflow/dags
+  - ./dbts:/opt/airflow/dbts
+  - ./docker/airflow/config:/opt/airflow/config
+  - ./docker/airflow/plugins:/opt/airflow/plugins
+  - ./docker/volume/airflow/logs:/opt/airflow/logs
+  - ./datasources:/opt/airflow/sources # Mount datasources directory to airflow containers
+  - ./notebook:/opt/spark/notebook # Mount notebook directory to airflow containers (for spark script)
+  - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf # Default configs for spark
+  - /var/run/docker.sock:/var/run/docker.sock
+  - C:/Users/matsch/Downloads/FTP_TESTING:/ftp_files
   user: root
-  depends_on:
-    &airflow-common-depends-on
+  depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
     postgres:
@@ -60,15 +57,15 @@ services:
     container_name: postgres
     hostname: postgres
     image: postgres:11
-    profiles: [ "postgres", "storage", "spark", "airflow", "dbt"]
+    profiles: [ "postgres", "storage", "spark", "airflow", "dbt" ]
     ports:
-      - "5432:5432"
+    - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - ./docker/volume/postgres:/var/lib/postgresql/data
-      - ./docker/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+    - ./docker/volume/postgres:/var/lib/postgresql/data
+    - ./docker/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 10s
@@ -78,20 +75,20 @@ services:
     container_name: minio
     hostname: minio
     image: 'minio/minio'
-    profiles: [ "storage","spark", "nifi", "dbt" ]    
+    profiles: [ "storage", "spark", "nifi", "dbt" ]
     ports:
-      - '9000:9000'
-      - '9001:9001'
+    - '9000:9000'
+    - '9001:9001'
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
       MINIO_DOMAIN: minio
     command: server /data --console-address ":9001"
     volumes:
-      - ./docker/volume/minio:/data
+    - ./docker/volume/minio:/data
   minio-job:
     image: 'minio/mc'
-    profiles: [ "storage" , "nifi"]    
+    profiles: [ "storage", "nifi" ]
     container_name: minio-job
     hostname: minio-job
     entrypoint: |
@@ -104,14 +101,14 @@ services:
       /usr/bin/mc mb --quiet myminio/dev-landing-zone || true;
       "
     environment:
-      - AWS_ACCESS_KEY_ID=minio
-      - AWS_SECRET_ACCESS_KEY=minio123
-      - AWS_REGION=us-east-1
-      - AWS_DEFAULT_REGION=us-east-1
-      - S3_ENDPOINT=http://minio:9000
-      - S3_PATH_STYLE_ACCESS=true
+    - AWS_ACCESS_KEY_ID=minio
+    - AWS_SECRET_ACCESS_KEY=minio123
+    - AWS_REGION=us-east-1
+    - AWS_DEFAULT_REGION=us-east-1
+    - S3_ENDPOINT=http://minio:9000
+    - S3_PATH_STYLE_ACCESS=true
     depends_on:
-      - minio
+    - minio
 
   hive-metastore:
     container_name: hive-metastore
@@ -120,9 +117,9 @@ services:
       context: ./docker/hive-metastore/
       dockerfile: Dockerfile
     image: 1ambda/lakehouse:hive-metastore-3.1.2
-    profiles: [ "storage" ,"spark", "dbt"]    
+    profiles: [ "storage", "spark", "dbt" ]
     ports:
-      - '9083:9083' # Metastore Thrift
+    - '9083:9083' # Metastore Thrift
     environment:
       HIVE_METASTORE_DRIVER: org.postgresql.Driver
       HIVE_METASTORE_JDBC_URL: jdbc:postgresql://postgres:5432/metastore
@@ -136,32 +133,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
     ####################################################################################################
-  # Dremio
-  ####################################################################################################
+    # Dremio
+    ####################################################################################################
   dremio:
-    profiles: ["dremio", "storage", "dbt"]
+    profiles: [ "dremio", "storage", "dbt" ]
     container_name: dremio
     hostname: dremio
     image: dremio/dremio-oss:latest
     platform: linux/x86_64
     volumes:
-      - ./docker/dremio/conf:/opt/dremio/conf
+    - ./docker/dremio/conf:/opt/dremio/conf
     ports:
-      - 9047:9047
-      - 31010:31010
-      - 32010:32010
+    - 9047:9047
+    - 31010:31010
+    - 32010:32010
   ####################################################################################################
   # Nessie
   ####################################################################################################
   nessie:
     profiles: [ "storage", "dbt", "dremio" ]
     container_name: nessie
-    hostname: nessie    
+    hostname: nessie
     image: projectnessie/nessie:0.67.0
     ports:
-      - 19120:19120
+    - 19120:19120
 
   ####################################################################################################
   # Spark
@@ -179,42 +175,42 @@ services:
       jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
       "
     ports:
-      - "4040:4040"
-      - "8900:8888"
-      - "8901:8080"
+    - "4040:4040"
+    - "8900:8888"
+    - "8901:8080"
     depends_on:
-      - minio
-      - hive-metastore
+    - minio
+    - hive-metastore
     environment:
-      - AWS_ACCESS_KEY_ID=minio
-      - AWS_SECRET_ACCESS_KEY=minio123
-      - AWS_REGION=us-east-1
-      - AWS_DEFAULT_REGION=us-east-1
-      - S3_ENDPOINT=http://minio:9000
-      - S3_PATH_STYLE_ACCESS=true
+    - AWS_ACCESS_KEY_ID=minio
+    - AWS_SECRET_ACCESS_KEY=minio123
+    - AWS_REGION=us-east-1
+    - AWS_DEFAULT_REGION=us-east-1
+    - S3_ENDPOINT=http://minio:9000
+    - S3_PATH_STYLE_ACCESS=true
     mem_limit: "8g"
     mem_reservation: "512m"
     cpus: "4"
     cpuset: "4"
     volumes:
-      - ./notebook:/opt/notebook
-      - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
-      - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
-      - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf
-      - spark_binaries:/opt/spark/bin
-      - spark_jars:/opt/spark/jars
-      # - spark_python:/usr
+    - ./notebook:/opt/notebook
+    - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
+    - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+    - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf
+    - spark_binaries:/opt/spark/bin
+    - spark_jars:/opt/spark/jars
+    # - spark_python:/usr
 
-  ####################################################################################################
-  # Airflow
-  ####################################################################################################
+    ####################################################################################################
+    # Airflow
+    ####################################################################################################
   airflow-webserver:
     <<: *airflow-common
     profiles: [ "airflow" ]
     container_name: airflow-webserver
     command: webserver
     ports:
-      - "8080:8080"
+    - "8080:8080"
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
@@ -250,8 +246,11 @@ services:
     command: celery worker
     healthcheck:
       test:
-        - "CMD-SHELL"
-        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      - "CMD-SHELL"
+      - 'celery --app airflow.providers.celery.executors.celery_executor.app
+        inspect ping -d "celery@$${HOSTNAME}" || celery --app
+        airflow.executors.celery_executor.app inspect ping -d
+        "celery@$${HOSTNAME}"'
       interval: 30s
       timeout: 10s
       retries: 5
@@ -273,9 +272,9 @@ services:
       CONNECTION_CHECK_MAX_COUNT: "0"
     # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
     command:
-      - bash
-      - -c
-      - airflow
+    - bash
+    - -c
+    - airflow
   airflow-init:
     <<: *airflow-common
     profiles: [ "airflow" ]
@@ -283,11 +282,11 @@ services:
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
-      - -c
-      - |
-        mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "50000:0" /sources/{logs,dags,plugins}
-        exec /entrypoint airflow version 
+    - -c
+    - |
+      mkdir -p /sources/logs /sources/dags /sources/plugins
+      chown -R "50000:0" /sources/{logs,dags,plugins}
+      exec /entrypoint airflow version 
     # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
@@ -296,14 +295,14 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+    - ${AIRFLOW_PROJ_DIR:-.}:/sources
   redis:
     profiles: [ "airflow" ]
     container_name: redis
     hostname: redis
     image: redis:latest
     expose:
-      - 6379
+    - 6379
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -324,22 +323,20 @@ services:
     container_name: nifi
     hostname: nifi
     ports:
-      - '8443:8443'
+    - '8443:8443'
     volumes:
-      - ./docker/nifi/jdbc:/opt/jdbc
-      - nifi_data:/opt/nifi/data
-    #  - ./docker/nifi/certs:/opt/certs
-    #  - ./docker/nifi/logs:/opt/nifi/logs
-      - ./docker/nifi/properties:/opt/nifi/nifi-current/properties  # credentials, env-vars & spark-config property files
-      - nifi_database_repository:/opt/nifi/nifi-current/database_repository
-      - nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
-      - nifi_content_repository:/opt/nifi/nifi-current/content_repository
-      - nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
-      - ./datasources:/opt/nifi/sources
-      - ./notebook:/opt/nifi/notebook/ # Mount scripts directory to nifi container (for spark script)
-      - spark_binaries:/opt/spark/bin
-      - spark_jars:/opt/spark/jars
-      # - spark_python:/usr
+    - ./docker/nifi/jdbc:/opt/jdbc
+    - ./datasources:/home/nifi/datasources
+    # - ./docker/nifi/properties:/opt/nifi/nifi-current/properties # credentials, env-vars & spark-config property files
+    # - nifi_database_repository:/opt/nifi/nifi-current/database_repository
+    # - nifi_flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+    # - nifi_content_repository:/opt/nifi/nifi-current/content_repository
+    # - nifi_provenance_repository:/opt/nifi/nifi-current/provenance_repository
+    # - ./datasources:/opt/nifi/sources
+    # - ./notebook:/opt/nifi/notebook/ # Mount scripts directory to nifi container (for spark script)
+    # - spark_binaries:/opt/spark/bin
+    # - spark_jars:/opt/spark/jars
+    # - spark_python:/usr
     environment:
       NIFI_WEB_HTTP_PORT: 8443
       SINGLE_USER_CREDENTIALS_USERNAME: nifi
@@ -355,13 +352,13 @@ services:
     image: apache/nifi-registry:latest
     container_name: nifi-registry
     ports:
-      - '1808:18080'
+    - '1808:18080'
     volumes:
-     - ./docker/volume/nifi-registry/data:/data
-     - ./docker/volume/nifi-registry/database:/opt/nifi-registry/nifi-registry-current/database
-     - ./docker/volume/nifi-registry//flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
-     - ./docker/volume/nifi-registry/nifi-registry:/opt/nifi-registry/nifi-registry-current/nifi-registry
-     - ./docker/volume/nifi-registry/certs:/opt/certs
+    - ./docker/volume/nifi-registry/data:/data
+    - ./docker/volume/nifi-registry/database:/opt/nifi-registry/nifi-registry-current/database
+    - ./docker/volume/nifi-registry//flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
+    - ./docker/volume/nifi-registry/nifi-registry:/opt/nifi-registry/nifi-registry-current/nifi-registry
+    #  - ./docker/volume/nifi-registry/certs:/opt/certs
     environment:
       NIFI_REGISTRY_WEB_HTTP_PORT: 18080
       # NIFI_REGISTRY_FLOW_PROVIDER: git
@@ -379,9 +376,9 @@ volumes:
   nifi_provenance_repository:
   spark_binaries:
   spark_jars:
-  # spark_python:
+    # spark_python:
 
-# Configure Network
+    # Configure Network
 networks:
   default:
     name: datalakehouse
