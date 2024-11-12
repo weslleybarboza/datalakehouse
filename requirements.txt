@@ -1,9 +1,1 @@
-dbt-core 
-airflow-dbt
-apache-airflow
-docker
-python-dotenv
-apache-airflow-providers-docker
-astronomer-cosmos
-apache-airflow-providers-apache-spark
-apache-airflow[amazon]
+dbt-dremio

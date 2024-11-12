@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: landing_zone
+    database: landing-zone
+    schema: ""
+    tables:
+      - name: invoices
+        description: "Invoices table from the landing zone"

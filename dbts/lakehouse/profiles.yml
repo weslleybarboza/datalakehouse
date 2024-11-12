@@ -1,0 +1,15 @@
+lakehouse:
+  outputs:
+    dev:
+      dremio_space: '@dremio'
+      dremio_space_folder: no_schema
+      object_storage_path: no_schema
+      object_storage_source: lakehouse
+      password: dremio123
+      port: 9047
+      software_host: localhost
+      threads: 1
+      type: dremio
+      use_ssl: false
+      user: dremio
+  target: dev
