@@ -1,0 +1,9 @@
+FROM dremio/dremio-oss:latest
+
+USER root
+
+COPY docker/dremio/create_dremio_user.sh /opt/create_dremio_user.sh
+
+RUN chmod +x /opt/create_dremio_user.sh
+
+CMD /opt/dremio/bin/dremio & /opt/create_dremio_user.sh && tail -f /opt/dremio/log/server.out
