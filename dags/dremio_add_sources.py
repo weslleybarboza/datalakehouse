@@ -36,7 +36,9 @@ sources = [
             ],
             "secure": False,
             "isCachingEnabled": True,
-            "maxCacheSpacePct": 100
+            "maxCacheSpacePct": 100,
+            "refreshEvery": { "unit": "HOURS", "duration": 1 },
+            "expiration": { "unit": "HOURS", "duration": 3 }
         }
     },
     {        

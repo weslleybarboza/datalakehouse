@@ -85,7 +85,7 @@ On Nifi add a new Process group and import the json file according the following
 
 <img src="docs/img/nifi-11.png">
 
-9. Paste the csv file on the folder datasources inside the repository. It will be automatically sent to Minio on under the bucket landing-zone and delete the file.
+9. Paste the csv file ("docs/requirement/Invoices_Year_2009-2010.csv") inside the folder datasources on the project repository. It will be automatically sent to Minio on under the bucket landing-zone and delete the file.
 
 <img src="docs/img/nifi-12.png">
 
@@ -105,10 +105,13 @@ docker compose --profile dremio up -d
 <img src="docs/img/dremio-1.png">
 <img src="docs/img/dremio-2.png">
 
-2. On the project repository, execute the Python script "scripts/dremio_add_sources.py" to add the sources through Dremio API.
+2. On the project repository, 
+
+2.1. Execute the Python script "scripts/dremio_add_sources.py" to add the sources through Dremio API.
 
 <img src="docs/img/dremio-3.png">
 
+2.2. Execute the Python script "scripts/dremio_converting_to_table.py" to convert the csv file into a table.
 
 ## Tools and credentials
 
