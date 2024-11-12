@@ -56,13 +56,13 @@ sources = [
                 "value": "minio:9000"
             },
             ],
-            "rootPath": "/",
+            "rootPath": "/landing-zone",
             "enableAsync": False,
             "compatibilityMode": True,
             "isCachingEnabled": True,
             "maxCacheSpacePct": 100,
             "whitelistedBuckets": [
-            "landing-zone"
+                "landing-zone"
             ],
             "requesterPays": False,
             "enableFileStatusCheck": True,
