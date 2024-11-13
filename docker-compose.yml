@@ -121,6 +121,7 @@ services:
       dockerfile: docker/dremio/dockerfile
     platform: linux/x86_64
     environment:
+      - DREMIO_JAVA_SERVER_EXTRA_OPTS=-Dpaths.dist=file:///opt/dremio/data/dist
       - DREMIO_S3_ACCESS_KEY=minio
       - DREMIO_S3_SECRET_KEY=minio123
       - DREMIO_S3_ENDPOINT=http://minio:9000
@@ -141,7 +142,7 @@ services:
     profiles: [ "storage", "dbt", "dremio" ]
     container_name: nessie
     hostname: nessie
-    image: projectnessie/nessie:0.67.0
+    image: projectnessie/nessie:latest
     ports:
     - 19120:19120
     ####################################################################################################

@@ -27,7 +27,7 @@ sources = [
             },
             {
                 "name": "fs.s3a.endpoint",
-                "value": "http://minio:9000"
+                "value": "minio:9000"
             },
             {
                 "name": "dremio.s3.compat",
