@@ -1,4 +1,8 @@
-{{ config(materialized='view', schema='bronze') }}
+{{
+  config(
+    post_hook= ['ALTER DATASET "@dremio".invoices CREATE RAW REFLECTION ref_invoices using DISPLAY (Invoice, StockCode, Description, Quantity, InvoiceDate, Price, "Customer ID", Country)']
+    )
+}}
 
 with source as (
       select * from {{ source('landing_zone', 'invoices') }}

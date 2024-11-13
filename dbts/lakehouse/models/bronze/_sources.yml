@@ -6,3 +6,12 @@ sources:
     schema: files
     tables:
       - name: invoices
+        columns:
+        - name: Invoice
+        - name: StockCode
+        - name: Description
+        - name: Quantity
+        - name: InvoiceDate
+        - name: Price
+        - name: Customer ID
+        - name: Country      
