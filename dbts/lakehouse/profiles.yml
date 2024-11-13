@@ -3,7 +3,7 @@ lakehouse:
     dev:
       dremio_space: '@dremio'
       dremio_space_folder: no_schema
-      object_storage_path: no_schema
+      object_storage_path: default
       object_storage_source: lakehouse
       password: dremio123
       port: 9047

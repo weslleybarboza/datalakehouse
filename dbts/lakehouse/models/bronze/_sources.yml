@@ -3,7 +3,6 @@ version: 2
 sources:
   - name: landing_zone
     database: landing-zone
-    schema: ""
+    schema: files
     tables:
       - name: invoices
-        description: "Invoices table from the landing zone"
