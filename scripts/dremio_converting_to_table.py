@@ -6,8 +6,8 @@ DREMIO_API_URL = 'http://localhost:9047/'
 DREMIO_USERNAME = 'dremio'
 DREMIO_PASSWORD = 'dremio123'
 
-folder_path = ["landing-zone","invoices"] 
-id_dremio = "dremio:/landing-zone/invoices"
+folder_path = ["landing-zone","files","invoices"] 
+id_dremio = "dremio:/landing-zone/files/invoices"
 id = urllib.parse.quote(id_dremio, safe='')
 
 payload = {
