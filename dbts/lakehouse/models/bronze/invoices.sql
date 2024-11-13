@@ -1,3 +1,5 @@
+{{ config(materialized='view', schema='bronze') }}
+
 with source as (
       select * from {{ source('landing_zone', 'invoices') }}
 ),
