@@ -14,7 +14,7 @@ airflow_dag_name = 'dbt_refresh_data_warehouse_full_model'
 profile_config = ProfileConfig(
     profile_name="lakehouse",
     profiles_yml_filepath=dbt_profile_path,
-    target_name="dev"
+    target_name="prod"
 )
 
 my_cosmos_dag = DbtDag(
