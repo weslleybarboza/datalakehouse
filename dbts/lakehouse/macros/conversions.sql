@@ -11,3 +11,11 @@ CASE
     ELSE TO_TIMESTAMP({{ field }}, 'DD/MM/YYYY HH24:MI')
 END
 {% endmacro %}
+
+{% macro convert_to_varchar(field) %}
+CASE
+    WHEN TRIM( CAST({{field}} AS VARCHAR)) = '' THEN '-'
+    WHEN TRIM( CAST({{field}} AS VARCHAR)) IS NULL THEN '-'
+    ELSE TRIM( CAST({{field}} AS VARCHAR))
+END
+{% endmacro %}
