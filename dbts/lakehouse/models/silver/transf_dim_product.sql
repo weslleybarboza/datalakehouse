@@ -1,23 +1,36 @@
-with source as (
-select * from {{ ref('load_invoices') }}
+WITH source AS (
+    SELECT * 
+    FROM {{ ref('load_invoices') }}
 )
-, getting_unique_codes as (
-select 
-  distinct
-  s.stock_code as source_key,
-  s.stock_code as code,
-  s.description as description
-from source s
+,getting_unique_codes AS (
+    SELECT DISTINCT
+        stock_code AS source_key,
+        stock_code AS code,
+        description
+    FROM source 
 )
-, completeness as (
-select 
-  source_key,
-  code,
-  CASE 
-    WHEN description = '-' THEN CONCAT('PRODUCT ', code)
-    ELSE description
-  end description
-from getting_unique_codes
+,ranked_descriptions AS (
+    SELECT 
+        source_key,
+        code,
+        description,
+        ROW_NUMBER() OVER (PARTITION BY code ORDER BY description DESC) as ranking
+    FROM getting_unique_codes
 )
-select * from completeness
-where 1=1
+,completeness AS (
+    SELECT 
+        source_key,
+        code,
+        CASE 
+            WHEN description = '-' THEN CONCAT('PRODUCT ', code)
+            ELSE description
+        END AS description,
+        ranking
+    FROM ranked_descriptions
+)
+SELECT 
+    source_key,
+    code,
+    description
+FROM completeness
+WHERE ranking = 1
