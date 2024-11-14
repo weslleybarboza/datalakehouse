@@ -1,8 +1,3 @@
-{{ config(
-    post_hook="INSERT INTO {{ this }} (id_dim_calendar, date_day) VALUES ('0', DATE '1900-01-01')"
-) }}
-
-
 select
     date_day
     , md5(cast(extract(year from date_day) as varchar) || 
