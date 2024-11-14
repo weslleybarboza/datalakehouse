@@ -13,7 +13,7 @@ snapshot-paths: ["snapshots"]
 
 clean-targets:
   - "target"
-  - "dbt_packages"
+  - "dbt_packages"     
 
 models:
   +reflection_refresh: True
@@ -22,7 +22,7 @@ models:
   +create_or_replace: True
   lakehouse:
     bronze:
-      +materialized: view
+      +materialized: table
       +on_table_exists: drop
       +twin_strategy: allow
       +object_storage_path: bronze
@@ -38,3 +38,9 @@ models:
       +on_table_exists: drop
       +object_storage_path: gold
       +twin_strategy: allow
+
+seeds:
+  +on_table_exists: drop
+  +delimiter: ","
+  +object_storage_path: seed
+  +twin_strategy: allow
