@@ -39,7 +39,6 @@ x-airflow-common: &airflow-common
   - ./notebook:/opt/spark/notebook # Mount notebook directory to airflow containers (for spark script)
   - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf # Default configs for spark
   - /var/run/docker.sock:/var/run/docker.sock
-  - C:/Users/matsch/Downloads/FTP_TESTING:/ftp_files
   user: root
   depends_on: &airflow-common-depends-on
     redis:
