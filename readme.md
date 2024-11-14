@@ -1,20 +1,18 @@
-# data stack
+# Data stack
 
 ## Overview
-This 
+This data stack was built in answer to the assessment. During the test the following situations were identified:
+1. duplicated data for the same key on the tables fact_invoice and dim_product
+2. the data format was different
+3. fields empty/null
 
 ## Data Stack
 
 - Nifi for ingestion
-- Nifi registry for control version
-- Minio for object storage (S3 AWS)
-- Dremio as query engine
+- Minio for object storage (S3)
+- Dremio as query engine (Iceberg tables)
 - Apache Nessie for metastore
-
-
-- DBT for transformation, basic tests and documentation
-
-- Jupyter notebook for data quality
+- DBT for transformation, tests and documentation
 - Airflow orchestration
 
 # Environment setup
@@ -113,12 +111,23 @@ docker compose --profile dremio up -d
 
 2.2. Execute the Python script "scripts/dremio_converting_to_table.py" to convert the csv file into a table.
 
+2.3. The DBT project will handle all DML, DDL and SQL of the project. To execute it start airflow and execute the DAG dbt_refresh_data_warehouse_full_model.
+
+```sh
+docker compose --profile airflow up -d
+````
+
+2.4. The Data Lakehouse should be presented inside Dremio, that can be accessed by the UI or a Dbeaver connection.
+
 ## Tools and credentials
 
 ### Nifi
 https://localhost:8443/nifi/#/login
 user: nifi
 password: nifi12345678
+
+### Apache Nessie
+http://localhost:19120/t
 
 ### Minio IO
 http://localhost:9001/
