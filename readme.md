@@ -119,6 +119,8 @@ docker compose --profile airflow up -d
 
 2.4. The Data Lakehouse should be presented inside Dremio, that can be accessed by the UI or a Dbeaver connection.
 
+<img src="docs/img/dremio-4.png">
+
 ## Tools and credentials
 
 ### Nifi
