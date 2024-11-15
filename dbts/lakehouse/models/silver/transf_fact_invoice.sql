@@ -24,7 +24,6 @@ group by
   invoice,
   stock_code,
   invoice_date,
-  price,
   customer_id,
   country
 )
