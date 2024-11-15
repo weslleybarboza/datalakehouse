@@ -1,5 +1,6 @@
 select
   concat(invoice, '|', stock_code) as source_key,
+  invoice_date,
   quantity,
   18 vat,
   total_amount_exc_vat,

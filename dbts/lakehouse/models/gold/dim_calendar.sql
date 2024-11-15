@@ -1,3 +1,6 @@
+with date_range as (
+select to_date(a."date", 'YYYY-MM-DD') as date_day from {{ ref('seed_date') }} a
+)
 select
     date_day
     , md5(cast(extract(year from date_day) as varchar) || 
@@ -43,4 +46,4 @@ select
     , date_add(date_trunc('year', date_day), 364) as year_end_date  -- Approximate year end
     {{add_audit_columns()}}
 
-from {{ ref('transf_calendar') }}  -- Reference your pre-generated date table
+from date_range

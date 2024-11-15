@@ -3,7 +3,7 @@ select
   invoice,
   stock_code,
   quantity,
-  invoice_date,
+  to_date(invoice_date) invoice_date,
   price,
   customer_id,
   country

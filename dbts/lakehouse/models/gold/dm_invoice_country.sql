@@ -13,4 +13,4 @@ group by
   cl.date_day,
   c.region_name,
   c.sub_region_code,
-  c.country,
+  c.country

@@ -1,0 +1,3 @@
+models:
+  - name: invoices
+    description: "The 'invoices' model is derived from the 'invoices' table in the 'files' schema of the 'landing-zone' database. It includes the following columns: 'Invoice', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'Price', 'Customer ID', and 'Country'. The model is created by renaming the columns from the source table."
