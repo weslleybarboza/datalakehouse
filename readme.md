@@ -121,10 +121,12 @@ docker compose --profile dremio up -d
    ```sh
    docker compose --profile airflow up -d
    ```
+   
+   ![Step 4](docs/img/airflow-1.png)
 
 4. The Data Lakehouse should now appear in Dremio, accessible through the UI or a DBeaver connection.
 
-   ![Step 4](docs/img/dremio-4.png)
+   ![Step 5](docs/img/dremio-4.png)
 
 ## Tools and Credentials
 
